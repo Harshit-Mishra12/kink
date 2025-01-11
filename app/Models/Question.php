@@ -20,4 +20,9 @@ class Question extends Model
 
     // Optionally, you can add timestamps if they are present in the table
     public $timestamps = true;
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'question_categories');
+    }
 }

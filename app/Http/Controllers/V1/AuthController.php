@@ -75,7 +75,7 @@ class AuthController extends Controller
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
-            'status_code' => 2,
+            'status_code' => 1,
             'data' => ['user' => $user, 'token' => $token],
             'message' => 'Anonymous user created successfully.',
         ]);
