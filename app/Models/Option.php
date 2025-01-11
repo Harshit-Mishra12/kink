@@ -26,4 +26,15 @@ class Option extends Model
 
     // If you are using timestamps, you don't need to define this (Laravel handles it automatically)
     public $timestamps = true;
+
+
+    public function question()
+    {
+        return $this->belongsTo(Question::class);
+    }
+
+    public function responses()
+{
+    return $this->hasMany(Response::class, 'option_id');
+}
 }
