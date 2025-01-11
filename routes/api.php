@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\V1\AboutUsController;
+use App\Http\Controllers\V1\Admin\CategoryController;
 use App\Http\Controllers\V1\QuestionsController;
 use App\Http\Controllers\V1\OptionsController;
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\ContactUsController;
 use App\Http\Controllers\V1\ImprintController;
 use App\Http\Controllers\V1\PrivacyPolicyController;
+use App\Http\Controllers\V1\ResultsController;
 use App\Http\Controllers\V1\User\QuizController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -42,7 +44,7 @@ Route::prefix('v1')->group(function () {
 
 
 
-
+    // Route::post('/fetchresults', [ResultsController::class, 'fetchUserReport']);
 
 
     Route::middleware('auth:sanctum')->group(function () {
@@ -51,6 +53,11 @@ Route::prefix('v1')->group(function () {
             Route::post('/fetchcontactus', [ContactUsController::class, 'getcontactus']);
             Route::post('/saveaboutus', [AboutUsController::class, 'createOrUpdateAboutUs']);
             Route::post('/fetchaboutus', [AboutUsController::class, 'fetchAboutUs']);
+            Route::post('/savecategory', [CategoryController::class, 'saveCategory']);
+            Route::post('/updatecategory', [CategoryController::class, 'updateCategory']);
+            Route::post('/deletecategory', [CategoryController::class, 'deleteCategory']);
+            Route::get('/fetchallcategories', [CategoryController::class, 'fetchAllCategories']);
+            Route::post('/fetchcategorybyid', [CategoryController::class, 'fetchCategoryById']);
         });
 
         Route::prefix('user')->group(function () {
