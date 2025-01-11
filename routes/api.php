@@ -44,7 +44,7 @@ Route::prefix('v1')->group(function () {
 
 
 
-    // Route::post('/fetchresults', [ResultsController::class, 'fetchUserReport']);
+    Route::post('/fetchresults', [ResultsController::class, 'fetchUserReport']);
 
 
     Route::middleware('auth:sanctum')->group(function () {
