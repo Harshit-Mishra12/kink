@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 class OptionsController extends Controller
 {
 
-    public function fetchoptions()
+    public function fetchOptions()
     {
         // Fetch all options
         $options = Option::all();

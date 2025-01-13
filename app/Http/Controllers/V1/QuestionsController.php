@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 class QuestionsController extends Controller
 {
 
-        public function fetchquestions()
+        public function fetchQuestions()
         {
             try {
                 // Fetch active questions from the database

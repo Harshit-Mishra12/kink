@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class ContactUsController extends Controller
 {
 
-    public function savecontactus(Request $request)
+    public function saveContactUs(Request $request)
     {
         // Validate incoming request
         $validated = $request->validate([
@@ -45,7 +45,7 @@ class ContactUsController extends Controller
         ]);
     }
 
-    public function fetchcontactus(Request $request)
+    public function fetchContactUs(Request $request)
     {
         // Validate that the language is either 'en' or 'de'
         $validated = $request->validate([

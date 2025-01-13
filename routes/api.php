@@ -26,42 +26,45 @@ Route::prefix('v1')->group(function () {
     })->name('optimize');
 
     Route::post("/auth/login", [AuthController::class, 'login']);
-    Route::post('/createuser', [AuthController::class, 'createAnonymousUser']);
-    Route::get("/fetchquestions", [QuestionsController::class, 'fetchquestions']);
-    Route::get("/fetchoptions", [OptionsController::class, 'fetchoptions']);
+    Route::post('/create-user', [AuthController::class, 'createAnonymousUser']);
+    Route::get("/fetch-questions", [QuestionsController::class, 'fetchQuestions']);
+    Route::get("/fetch-options", [OptionsController::class, 'fetchOptions']);
 
-    Route::post('/savecontactus', [ContactUsController::class, 'savecontactus']);
-    Route::post('/fetchcontactus', [ContactUsController::class, 'fetchcontactus']);
-    Route::post('/saveaboutus', [AboutUsController::class, 'createOrUpdateAboutUs']);
-    Route::post('/fetchaboutus', [AboutUsController::class, 'fetchAboutUs']);
+    Route::post('/save-contactus', [ContactUsController::class, 'saveContactUs']);
+    Route::post('/fetch-contactus', [ContactUsController::class, 'fetchContactUs']);
+    Route::post('/save-aboutus', [AboutUsController::class, 'createOrUpdateAboutUs']);
+    Route::post('/fetch-aboutus', [AboutUsController::class, 'fetchAboutUs']);
 
-    Route::post('/saveprivacypolicy', [PrivacyPolicyController::class, 'createOrUpdatePrivacyPolicy']);
-    Route::post('/fetchprivacypolicy', [PrivacyPolicyController::class, 'fetchPrivacyPolicy']);
-
-
-    Route::post('/saveimprint', [ImprintController::class, 'createOrUpdateImprint']);
-    Route::post('/fetchimprint', [ImprintController::class, 'fetchImprint']);
+    Route::post('/save-privacypolicy', [PrivacyPolicyController::class, 'createOrUpdatePrivacyPolicy']);
+    Route::post('/fetch-privacypolicy', [PrivacyPolicyController::class, 'fetchPrivacyPolicy']);
 
 
+    Route::post('/save-imprint', [ImprintController::class, 'createOrUpdateImprint']);
+    Route::post('/fetch-imprint', [ImprintController::class, 'fetchImprint']);
 
-    Route::post('/fetchresults', [ResultsController::class, 'fetchUserReport']);
+
+
+    Route::post('/fetch-results', [ResultsController::class, 'fetchUserReport']);
 
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('admin')->group(function () {
-            Route::post('/savecontactus', [ContactUsController::class, 'savecontactus']);
-            Route::post('/fetchcontactus', [ContactUsController::class, 'getcontactus']);
-            Route::post('/saveaboutus', [AboutUsController::class, 'createOrUpdateAboutUs']);
-            Route::post('/fetchaboutus', [AboutUsController::class, 'fetchAboutUs']);
-            Route::post('/savecategory', [CategoryController::class, 'saveCategory']);
-            Route::post('/updatecategory', [CategoryController::class, 'updateCategory']);
-            Route::post('/deletecategory', [CategoryController::class, 'deleteCategory']);
-            Route::get('/fetchallcategories', [CategoryController::class, 'fetchAllCategories']);
-            Route::post('/fetchcategorybyid', [CategoryController::class, 'fetchCategoryById']);
+            Route::post('/save-contactus', [ContactUsController::class, 'saveContactUs']);
+            Route::post('/fetch-contactus', [ContactUsController::class, 'fetchContactUs']);
+            Route::post('/save-aboutus', [AboutUsController::class, 'createOrUpdateAboutUs']);
+            Route::post('/fetch-aboutus', [AboutUsController::class, 'fetchAboutUs']);
+            Route::post('/save-category', [CategoryController::class, 'saveCategory']);
+            Route::post('/update-category', [CategoryController::class, 'updateCategory']);
+            Route::post('/delete-category', [CategoryController::class, 'deleteCategory']);
+            Route::get('/fetch-all-categories', [CategoryController::class, 'fetchAllCategories']);
+            Route::post('/fetch-categorybyid', [CategoryController::class, 'fetchCategoryById']);
+
+
+
         });
 
         Route::prefix('user')->group(function () {
-            Route::post('/saveresponses', [QuizController::class, 'saveResponses']);
+            Route::post('/save-responses', [QuizController::class, 'saveResponses']);
         });
 
 
