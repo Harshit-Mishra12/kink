@@ -175,8 +175,8 @@ class ResultsController extends Controller
             $pdf = FacadePdf::loadView('pdf.report', ['report' => $report]);
 
             // Use saveImageToServer to save the generated PDF
-            $fileName = "user_report_{$userId}.pdf";
-            $filePath = '/reports/' . $fileName;
+            $fileName = "user_report_{$userId}";
+            $filePath = '/reports/' ;
 
             // Save the PDF to the server using the helper function
             $savedFilePath = Helper::savePdfToServer($pdf->output(), $filePath);
@@ -186,7 +186,7 @@ class ResultsController extends Controller
                 'user_id' => $userId,
                 'file' => $savedFilePath,
             ]);
-
+           // return public_path() . $savedFilePath, $fileName;
             // Return the PDF as a response to download
             return response()->download(public_path() . $savedFilePath, $fileName);
 
