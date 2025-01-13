@@ -68,14 +68,35 @@ class Helper
         $file->move($path, $filename);
 
         // $baseUrl = getenv('APP_URL');
-         $baseUrl = 'https://kink.boxinallsoftech.com/public';
-       // $baseUrl = 'https://paleturquoise-crab-208767.hostingersite.com/runskart/public';
+        $baseUrl = 'https://kink.boxinallsoftech.com/public';
+        // $baseUrl = 'https://paleturquoise-crab-208767.hostingersite.com/runskart/public';
 
 
         $filePath = $baseUrl . $dir . $filename;
 
         return $filePath;
     }
+    public static function savePdfToServer($fileData, $dir)
+    {
+        $path = public_path() . $dir;
+        if (!File::exists($path)) {
+            File::makeDirectory($path, 0777, true, true);
+        }
+
+        // Generate a unique filename for the PDF
+        $filename = rand(10000, 100000) . '_' . time() . '.pdf';
+
+        // Save the raw file data to the specified directory
+        $filePath = $path . DIRECTORY_SEPARATOR . $filename;
+        file_put_contents($filePath, $fileData);
+
+        // You can return the URL or the file path
+        $baseUrl = 'https://kink.boxinallsoftech.com/public';
+        $fileUrl = $baseUrl . $dir . $filename;
+
+        return $fileUrl; // You can return either file path or file URL as needed
+    }
+
     public static function deleteImageFromServer($filePath)
     {
         if (File::exists(public_path($filePath))) {

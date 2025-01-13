@@ -45,6 +45,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function responses()
+    {
+        return $this->hasMany(Response::class, 'user_id', 'id');
+    }
+
     /**
      * Get the user's bank details.
      */
