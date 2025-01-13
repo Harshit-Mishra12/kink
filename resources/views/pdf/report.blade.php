@@ -67,7 +67,8 @@
                 <tr>
                     <td>{{ $category['category_name'] }}</td>
                     <td class="center">{{ $category['total_score'] }}</td>
-                    <td class="center">{{ $category['average_percentage']  }}%</td>
+                    <td class="center">{{ number_format($category['average_percentage'], 1) }}%</td>
+
                 </tr>
             @endforeach
         </tbody>

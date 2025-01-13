@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\V1\AboutUsController;
 use App\Http\Controllers\V1\Admin\CategoryController;
+use App\Http\Controllers\V1\Admin\StatisticsController;
 use App\Http\Controllers\V1\Admin\UserController;
 use App\Http\Controllers\V1\QuestionsController;
 use App\Http\Controllers\V1\OptionsController;
@@ -65,6 +66,8 @@ Route::prefix('v1')->group(function () {
             Route::post('/fetch-categorybyid', [CategoryController::class, 'fetchCategoryById']);
             Route::post('/fetch-users', [UserController::class, 'fetchUsers']);
             Route::post('/fetch-results', [ResultsController::class, 'fetchUserReport']);
+            Route::post('/fetch-statistics', [StatisticsController::class, 'fetchStatistics']);
+
         });
 
         Route::prefix('user')->group(function () {
