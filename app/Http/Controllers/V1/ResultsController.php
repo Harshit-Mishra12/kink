@@ -182,14 +182,19 @@ class ResultsController extends Controller
             $savedFilePath = Helper::savePdfToServer($pdf->output(), $filePath);
 
             // Save record in the `reports_downloads` table
-            ReportDownload::create([
+            $reportDownload = ReportDownload::create([
                 'user_id' => $userId,
                 'file' => $savedFilePath,
             ]);
+
            // return public_path() . $savedFilePath, $fileName;
             // Return the PDF as a response to download
-            return response()->download(public_path() . $savedFilePath, $fileName);
-
+            // return response()->download(public_path() . $savedFilePath, $fileName);
+            return response()->json([
+                'status_code' => 1, // Success
+                'message' => 'User report file fetched successfully!',
+                'data' => $reportDownload , // Convert associative array to indexed array
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status_code' => 2, // Failure
