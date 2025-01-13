@@ -115,8 +115,7 @@ class ResultsController extends Controller
             'user_id' => 'required|exists:users,id', // Ensure the user_id exists
         ]);
 
-        // $pdf = FacadePdf::loadHTML('<h1>Hello, World!</h1>');
-        // return $pdf->download('hello-world.pdf');
+
 
         try {
             $userId = $request->user_id;
