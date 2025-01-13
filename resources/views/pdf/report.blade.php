@@ -12,8 +12,7 @@
             <tr>
                 <th>Category</th>
                 <th>Total Score</th>
-                <th>Total Possible Score</th>
-                <th>Percentage</th>
+                <th>Average Percentage</th>
             </tr>
         </thead>
         <tbody>
@@ -21,8 +20,7 @@
                 <tr>
                     <td>{{ $category['category_name'] }}</td>
                     <td>{{ $category['total_score'] }}</td>
-                    <td>{{ $category['total_possible_score'] }}</td>
-                    <td>{{ number_format($category['percentage_score'], 2) }}%</td>
+                    <td>{{ $category['average_percentage']  }}%</td>
                 </tr>
             @endforeach
         </tbody>
