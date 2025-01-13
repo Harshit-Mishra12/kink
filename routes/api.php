@@ -25,6 +25,9 @@ Route::prefix('v1')->group(function () {
         Artisan::call('optimize');
         return response()->json(['message' => 'Application optimized successfully.']);
     })->name('optimize');
+    Route::get('/sanctum/csrf-cookie', function (Request $request) {
+        return response()->json(['message' => 'CSRF cookie set']);
+    });
 
     Route::post("/auth/login", [AuthController::class, 'login']);
     Route::post('/create-user', [AuthController::class, 'createAnonymousUser']);
@@ -47,7 +50,6 @@ Route::prefix('v1')->group(function () {
 
     Route::post('/fetch-results', [ResultsController::class, 'fetchUserReport']);
     Route::post('/download-report', [ResultsController::class, 'downloadReport']);
-
 
 
     Route::middleware('auth:sanctum')->group(function () {
