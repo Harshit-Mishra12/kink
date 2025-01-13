@@ -20,7 +20,9 @@ class UserController extends Controller
     {
         // Validate the incoming request
         $request->validate([
-            'filter' => 'nullable|string|in:language,gender,orientation,country,age_category', // Must be one of these
+            'filters' => 'nullable|array', // Filters must be an array
+            'filters.*.key' => 'required|string|in:language,gender,orientation,country,age_category', // Allowed keys
+            'filters.*.value' => 'required|string', // Corresponding values
             'page' => 'nullable|integer|min:1',
             'per_page' => 'nullable|integer|min:1|max:100',
         ]);
@@ -29,20 +31,19 @@ class UserController extends Controller
             // Default pagination parameters
             $perPage = $request->input('per_page', 10);
             $page = $request->input('page', 1);
-            $filterColumn = $request->input('filter'); // Which column to filter on
+            $filters = $request->input('filters', []);
 
-            if (!$filterColumn) {
-                return response()->json([
-                    'status_code' => 2, // Failure
-                    'message' => 'Filter is required.',
-                ], 400); // Bad Request
-            }
-
-            // Query to fetch users with role 'ANONYMOUSUSER' and exist in responses table
+            // Query to fetch users with role 'ANONYMOUSUSER' and responses
             $query = User::where('role', 'ANONYMOUSUSER')
-                ->whereHas('responses') // Ensure the user has responses
-                ->when($filterColumn, function ($q) use ($filterColumn) {
-                    $q->whereNotNull($filterColumn); // Filter users where the column is not null
+                ->whereHas('responses') // Ensure the user has at least one response
+                ->when(!empty($filters), function ($q) use ($filters) {
+                    foreach ($filters as $filter) {
+                        $filterKey = $filter['key'];
+                        $filterValue = $filter['value'];
+
+                        // Apply filter dynamically
+                        $q->where($filterKey, $filterValue);
+                    }
                 });
 
             // Paginate the results
@@ -54,6 +55,7 @@ class UserController extends Controller
                 'message' => 'Users fetched successfully!',
                 'data' => $users,
             ], 200);
+
         } catch (\Exception $e) {
             // Handle any errors and return failure response
             return response()->json([
@@ -63,4 +65,6 @@ class UserController extends Controller
             ], 500); // Internal Server Error
         }
     }
+
+
 }

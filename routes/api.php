@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\V1\AboutUsController;
 use App\Http\Controllers\V1\Admin\CategoryController;
+use App\Http\Controllers\V1\Admin\UserController;
 use App\Http\Controllers\V1\QuestionsController;
 use App\Http\Controllers\V1\OptionsController;
 use App\Http\Controllers\V1\AuthController;
@@ -45,6 +46,8 @@ Route::prefix('v1')->group(function () {
 
 
     Route::post('/fetch-results', [ResultsController::class, 'fetchUserReport']);
+    Route::post('/download-report', [ResultsController::class, 'downloadReport']);
+
 
 
     Route::middleware('auth:sanctum')->group(function () {
@@ -58,9 +61,8 @@ Route::prefix('v1')->group(function () {
             Route::post('/delete-category', [CategoryController::class, 'deleteCategory']);
             Route::get('/fetch-all-categories', [CategoryController::class, 'fetchAllCategories']);
             Route::post('/fetch-categorybyid', [CategoryController::class, 'fetchCategoryById']);
-
-
-
+            Route::post('/fetch-users', [UserController::class, 'fetchUsers']);
+            Route::post('/fetch-results', [ResultsController::class, 'fetchUserReport']);
         });
 
         Route::prefix('user')->group(function () {
