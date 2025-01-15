@@ -9,6 +9,7 @@ use App\Http\Controllers\V1\OptionsController;
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\ContactUsController;
 use App\Http\Controllers\V1\ImprintController;
+use App\Http\Controllers\V1\MetaTagController;
 use App\Http\Controllers\V1\PrivacyPolicyController;
 use App\Http\Controllers\V1\ResultsController;
 use App\Http\Controllers\V1\User\QuizController;
@@ -52,7 +53,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/fetch-results', [ResultsController::class, 'fetchUserReport']);
     Route::post('/download-report', [ResultsController::class, 'downloadReport']);
 
-
+    Route::get('/fetch-metadata', [MetaTagController::class, 'fetchMetaTag']);
     Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('admin')->group(function () {
             Route::post('/save-contactus', [ContactUsController::class, 'saveContactUs']);
@@ -69,7 +70,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/fetch-statistics', [StatisticsController::class, 'fetchStatistics']);
             Route::post('/fetch-questions-with-responses', [ResultsController::class, 'fetchQuestionsWithResponses']);
 
-
+            Route::post('/save-metadata', [MetaTagController::class, 'saveOrUpdateMetaTag']);
         });
 
         Route::prefix('user')->group(function () {
