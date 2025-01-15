@@ -6,6 +6,7 @@ use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Option;
+use App\Models\Question;
 use App\Models\ReportDownload;
 use App\Models\Response;
 use App\Models\User;
@@ -97,7 +98,6 @@ class ResultsController extends Controller
                 'message' => 'User report fetched successfully!',
                 'data' => array_values($report), // Convert associative array to indexed array
             ], 200);
-
         } catch (\Exception $e) {
             // Handle errors
             return response()->json([
@@ -107,6 +107,70 @@ class ResultsController extends Controller
             ], 500);
         }
     }
+    public function fetchQuestionsWithResponses(Request $request)
+    {
+        // Validate the incoming request
+        $request->validate([
+            'user_id' => 'required|exists:users,id', // Ensure the user_id exists
+        ]);
+
+        try {
+            $userId = $request->user_id;
+
+            // Step 1: Fetch all user responses
+            $responses = Response::where('user_id', $userId)->get();
+
+            // Step 2: Initialize an array to store questions with their responses and categories
+            $questionsData = [];
+
+            // Step 3: Iterate through the user's responses
+            foreach ($responses as $response) {
+                $questionId = $response->question_id;
+                $question = Question::find($questionId); // Get the question details
+                $option = $response->option; // Get the selected option (assumes 'option' relationship in Response model)
+
+                // Fetch the categories associated with this question
+                $categories = Category::whereHas('questions', function ($query) use ($questionId) {
+                    $query->where('questions.id', $questionId);
+                })->get();
+
+                // Prepare the categories data
+                $categoriesData = $categories->map(function ($category) {
+                    return [
+                        'id' => $category->id,
+                        'name' => $category->name,
+                    ];
+                });
+
+                // Prepare the question data with response and categories
+                $questionsData[] = [
+                    'question_id' => $question->id,
+                    'question_text' => $question->question_text,
+                    'user_response' => [
+                        'option_id' => $option->id,
+                        'option_text' => $option->option_label,
+                        'option_score' => $option->percentage,
+                    ],
+                    'categories' => $categoriesData,
+                ];
+            }
+
+            // Return the data as a JSON response
+            return response()->json([
+                'status_code' => 1, // Success
+                'message' => 'Questions with responses fetched successfully!',
+                'data' => $questionsData,
+            ], 200);
+        } catch (\Exception $e) {
+            // Handle errors
+            return response()->json([
+                'status_code' => 2, // Failure
+                'message' => 'Something went wrong. Please try again.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 
     public function downloadReport(Request $request)
     {
@@ -175,7 +239,7 @@ class ResultsController extends Controller
 
             // Use saveImageToServer to save the generated PDF
             $fileName = "user_report_{$userId}";
-            $filePath = '/reports/' ;
+            $filePath = '/reports/';
 
             // Save the PDF to the server using the helper function
             $savedFilePath = Helper::savePdfToServer($pdf->output(), $filePath);
@@ -186,13 +250,13 @@ class ResultsController extends Controller
                 'file' => $savedFilePath,
             ]);
 
-           // return public_path() . $savedFilePath, $fileName;
+            // return public_path() . $savedFilePath, $fileName;
             // Return the PDF as a response to download
             // return response()->download(public_path() . $savedFilePath, $fileName);
             return response()->json([
                 'status_code' => 1, // Success
                 'message' => 'User report file fetched successfully!',
-                'data' => $reportDownload , // Convert associative array to indexed array
+                'data' => $reportDownload, // Convert associative array to indexed array
             ], 200);
         } catch (\Exception $e) {
             return response()->json([

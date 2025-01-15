@@ -15,5 +15,6 @@ class VerifyCsrfToken extends Middleware
         //
         // 'public/api/v1/createuser',
         // 'api/v1/create-user',
+        // 'api/v1/user/save-responses',
     ];
 }
