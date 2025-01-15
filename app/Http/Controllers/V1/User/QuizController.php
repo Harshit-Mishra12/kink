@@ -16,7 +16,7 @@ class QuizController extends Controller
     public function saveResponses(Request $request)
     {
         // Validate the incoming request
-        $validatedData = $request->validate([
+         $validatedData = $request->validate([
             'user_id' => 'required|exists:users,id',
             'responses' => 'required|array',
             'responses.*.question_id' => 'required|exists:questions,id',

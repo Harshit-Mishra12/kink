@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*','http://localhost:3000','https://kink-test.netlify.app'],
+    'allowed_origins' => ['*','http://localhost:3001','https://kink-test.netlify.app'],
 
     'allowed_origins_patterns' => [],
 
