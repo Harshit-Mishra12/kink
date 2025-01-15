@@ -51,7 +51,7 @@ Route::prefix('v1')->group(function () {
 
     Route::post('/fetch-results', [ResultsController::class, 'fetchUserReport']);
     Route::post('/download-report', [ResultsController::class, 'downloadReport']);
-    Route::post('/save-responses', [QuizController::class, 'saveResponses']);
+
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('admin')->group(function () {
@@ -73,7 +73,7 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::prefix('user')->group(function () {
-
+            Route::post('/save-responses', [QuizController::class, 'saveResponses']);
         });
 
 
