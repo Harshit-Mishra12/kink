@@ -48,10 +48,10 @@ Route::prefix('v1')->group(function () {
     Route::post('/save-imprint', [ImprintController::class, 'createOrUpdateImprint']);
     Route::post('/fetch-imprint', [ImprintController::class, 'fetchImprint']);
 
-
-
     Route::post('/fetch-results', [ResultsController::class, 'fetchUserReport']);
     Route::post('/download-report', [ResultsController::class, 'downloadReport']);
+    Route::get('/fetch-all-categories', [CategoryController::class, 'fetchAllCategories']);
+    Route::post('/fetch-categorybyid', [CategoryController::class, 'fetchCategoryById']);
 
     Route::get('/fetch-metadata', [MetaTagController::class, 'fetchMetaTag']);
     Route::middleware('auth:sanctum')->group(function () {
