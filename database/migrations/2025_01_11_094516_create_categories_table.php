@@ -15,13 +15,10 @@ class CreateCategoriesTable extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id(); // Auto-incrementing primary key
-            $table->string('name'); // Category title
-            $table->string('title'); // Category title
             $table->string('image'); // URL or path to the image
-            $table->text('short_description'); // Short description
-            $table->longText('content'); // HTML content to store as template
             $table->timestamps(); // Created_at, updated_at timestamps
         });
+
     }
 
     /**
