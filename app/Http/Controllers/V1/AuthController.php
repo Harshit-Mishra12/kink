@@ -54,7 +54,7 @@ class AuthController extends Controller
     public function createAnonymousUser(Request $request)
     {
         $validatedData = $request->validate([
-            'language' => 'required|string',
+            'language' => 'required|string|in:en,de',
             'gender' => 'required|string',
             'orientation' => 'required|string',
             'country' => 'required|string',

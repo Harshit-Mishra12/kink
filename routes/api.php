@@ -33,7 +33,7 @@ Route::prefix('v1')->group(function () {
 
     Route::post("/auth/login", [AuthController::class, 'login']);
     Route::post('/create-user', [AuthController::class, 'createAnonymousUser']);
-    Route::get("/fetch-questions", [QuestionsController::class, 'fetchQuestions']);
+    Route::post("/fetch-questions", [QuestionsController::class, 'fetchQuestions']);
     Route::get("/fetch-options", [OptionsController::class, 'fetchOptions']);
 
     Route::post('/save-contactus', [ContactUsController::class, 'saveContactUs']);
@@ -50,7 +50,7 @@ Route::prefix('v1')->group(function () {
 
     Route::post('/fetch-results', [ResultsController::class, 'fetchUserReport']);
     Route::post('/download-report', [ResultsController::class, 'downloadReport']);
-    Route::get('/fetch-all-categories', [CategoryController::class, 'fetchAllCategories']);
+    Route::post('/fetch-all-categories', [CategoryController::class, 'fetchAllCategories']);
     Route::post('/fetch-categorybyid', [CategoryController::class, 'fetchCategoryById']);
 
     Route::get('/fetch-metadata', [MetaTagController::class, 'fetchMetaTag']);

@@ -154,13 +154,18 @@ class CategoryController extends Controller
         ]);
 
         try {
-            // Fetch all categories with translations for the specified language and their associated questions
+            // Fetch all categories with translations for the specified language and their associated questions with translations
             $categories = Category::with([
                 'translations' => function ($query) use ($request) {
                     // Only include translations for the requested language
                     $query->where('language', $request->language);
                 },
-                'questions' // Include associated questions
+                'questions' => function ($query) use ($request) {
+                    // Include question translations for the requested language
+                    $query->with(['translations' => function ($query) use ($request) {
+                        $query->where('language', $request->language); // Filter question translations by language
+                    }]);
+                }
             ])->get();
 
             // Filter out categories that don't have a translation for the requested language
@@ -187,10 +192,12 @@ class CategoryController extends Controller
                     'title' => $translation ? $translation->title : null,
                     'short_description' => $translation ? $translation->short_description : null,
                     'content' => $translation ? $translation->content : null,
-                    'questions' => $category->questions->map(function ($question) {
+                    'questions' => $category->questions->map(function ($question) use ($request) {
+                        $questionTranslation = $question->translations->first(); // Get the translation for the question in the requested language
+
                         return [
                             'id' => $question->id,
-                            'question' => $question->question_text, // Include only relevant fields for questions
+                            'question' => $questionTranslation ? $questionTranslation->text : null, // Include the translated question text
                         ];
                     }),
                 ];
@@ -213,6 +220,7 @@ class CategoryController extends Controller
         }
     }
 
+
     public function fetchCategoryById(Request $request)
     {
         // Validate the incoming request
@@ -226,12 +234,17 @@ class CategoryController extends Controller
             $category_id = $request->category_id;
             $language = $request->language;
 
-            // Find the category by category_id and eager load its associated questions and translations for the requested language
+            // Find the category by category_id and eager load its associated translations and questions with their translations for the requested language
             $category = Category::with([
                 'translations' => function ($query) use ($language) {
                     $query->where('language', $language); // Only fetch the translation for the requested language
                 },
-                'questions' // Include associated questions
+                'questions' => function ($query) use ($language) {
+                    // Eager load question translations for the requested language
+                    $query->with(['translations' => function ($query) use ($language) {
+                        $query->where('language', $language); // Filter question translations by language
+                    }]);
+                }
             ])->findOrFail($category_id);
 
             // Check if a translation exists for the requested language
@@ -254,9 +267,11 @@ class CategoryController extends Controller
                 'short_description' => $translation->short_description,
                 'content' => $translation->content,
                 'questions' => $category->questions->map(function ($question) {
+                    $questionTranslation = $question->translations->first(); // Get the translation for the question in the requested language
+
                     return [
                         'id' => $question->id,
-                        'question' => $question->question_text,
+                        'question' => $questionTranslation ? $questionTranslation->text : null, // Include the translated question text
                     ];
                 }),
             ];
@@ -277,6 +292,7 @@ class CategoryController extends Controller
             ], 500);  // HTTP status code 500 (Internal Server Error)
         }
     }
+
     public function deleteCategory(Request $request)
     {
         // Validate the incoming request
