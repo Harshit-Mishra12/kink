@@ -63,7 +63,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/save-category', [CategoryController::class, 'saveCategory']);
             Route::post('/update-category', [CategoryController::class, 'updateCategory']);
             Route::post('/delete-category', [CategoryController::class, 'deleteCategory']);
-            Route::get('/fetch-all-categories', [CategoryController::class, 'fetchAllCategories']);
+            Route::post('/fetch-all-categories', [CategoryController::class, 'fetchAllCategories']);
             Route::post('/fetch-categorybyid', [CategoryController::class, 'fetchCategoryById']);
             Route::post('/fetch-users', [UserController::class, 'fetchUsers']);
             Route::post('/fetch-results', [ResultsController::class, 'fetchUserReport']);
