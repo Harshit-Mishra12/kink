@@ -80,14 +80,13 @@ class CategoryController extends Controller
             ], 500); // HTTP status code 500 (Internal Server Error)
         }
     }
-
     public function updateCategory(Request $request)
     {
         // Validate the incoming request
         $request->validate([
-            'category_id' => 'required|exists:categories,id', // Ensure the category ID exists
+            'category_id' => 'required|exists:categories,id', // Ensure the category ID exists or will be created
             'language' => 'required|string|in:en,de,fr', // Language of the translation
-            'name' => 'required|string|max:255|unique:category_translations,name,' . $request->translation_id . ',id,language,' . $request->language,
+            'name' => 'required|string|max:255|unique:category_translations,name,' . $request->category_id . ',category_id,language,' . $request->language,
             'title' => 'required|string|max:255',
             'short_description' => 'required|string|max:500',
             'content' => 'required|string', // HTML content
@@ -97,16 +96,35 @@ class CategoryController extends Controller
         ]);
 
         try {
-            // Find the category by ID
-            $category = Category::findOrFail($request->category_id);
+            // Find the category by ID or create a new category if it does not exist
+            $category = Category::find($request->category_id);
+            if (!$category) {
+                // If category does not exist, create a new one
+                $category = Category::create([
+                    'category_id' => $request->category_id, // Assuming category_id is the unique identifier for the category
+                    'name' => $request->name,
+                ]);
+            }
 
-            // Check if the translation exists for the given language
+            // Check if the translation exists for the given language or create a new translation
             $translation = $category->translations()->where('language', $request->language)->first();
             if (!$translation) {
-                return response()->json([
-                    'status_code' => 2, // Failure
-                    'message' => 'Translation for the specified language does not exist.',
-                ]); // HTTP status code 404 (Not Found)
+                // Create new translation if not found
+                $translation = $category->translations()->create([
+                    'language' => $request->language,
+                    'name' => $request->name,
+                    'title' => $request->title,
+                    'short_description' => $request->short_description,
+                    'content' => $request->content,
+                ]);
+            } else {
+                // Update the existing translation with the provided data
+                $translation->update([
+                    'name' => $request->name,
+                    'title' => $request->title,
+                    'short_description' => $request->short_description,
+                    'content' => $request->content,
+                ]);
             }
 
             // Check if a new image is uploaded
@@ -114,14 +132,6 @@ class CategoryController extends Controller
                 $imagePath = Helper::saveImageToServer($request->file('image'), 'uploads/categories/');
                 $category->update(['image' => $imagePath]); // Update the category image
             }
-
-            // Update the translation with the provided data
-            $translation->update([
-                'name' => $request->name,
-                'title' => $request->title,
-                'short_description' => $request->short_description,
-                'content' => $request->content,
-            ]);
 
             // If selected questions are provided, sync the relationships
             if ($request->has('selected_question')) {
@@ -146,6 +156,74 @@ class CategoryController extends Controller
             ], 500); // HTTP status code 500 (Internal Server Error)
         }
     }
+
+
+    // public function updateCategory(Request $request)
+    // {
+    //     // Validate the incoming request
+    //     $request->validate([
+    //         'category_id' => 'required|exists:categories,id', // Ensure the category ID exists
+    //         'language' => 'required|string|in:en,de,fr', // Language of the translation
+    //         // 'name' => 'required|string|max:255|unique:category_translations,name,' . $request->translation_id . ',id,language,' . $request->language,
+    //         'name' => 'required|string|max:255|',
+    //         'title' => 'required|string|max:255',
+    //         'short_description' => 'required|string|max:500',
+    //         'content' => 'required|string', // HTML content
+    //         'image' => 'nullable|image|mimes:jpg,jpeg,png,gif', // Validate image file (optional during update)
+    //         'selected_question' => 'nullable|array', // Array of selected question IDs
+    //         'selected_question.*' => 'exists:questions,id', // Validate that the IDs exist in the questions table
+    //     ]);
+
+    //     try {
+    //         // Find the category by ID
+    //         $category = Category::findOrFail($request->category_id);
+
+    //         // Check if the translation exists for the given language
+    //         $translation = $category->translations()->where('language', $request->language)->first();
+    //         if (!$translation) {
+    //             return response()->json([
+    //                 'status_code' => 2, // Failure
+    //                 'message' => 'Translation for the specified language does not exist.',
+    //             ]); // HTTP status code 404 (Not Found)
+    //         }
+
+    //         // Check if a new image is uploaded
+    //         if ($request->hasFile('image')) {
+    //             $imagePath = Helper::saveImageToServer($request->file('image'), 'uploads/categories/');
+    //             $category->update(['image' => $imagePath]); // Update the category image
+    //         }
+
+    //         // Update the translation with the provided data
+    //         $translation->update([
+    //             'name' => $request->name,
+    //             'title' => $request->title,
+    //             'short_description' => $request->short_description,
+    //             'content' => $request->content,
+    //         ]);
+
+    //         // If selected questions are provided, sync the relationships
+    //         if ($request->has('selected_question')) {
+    //             $category->questions()->sync($request->selected_question); // Detach old and attach new questions
+    //         }
+
+    //         // Eager load relationships and return the response
+    //         $category = $category->load('translations', 'questions');
+
+    //         return response()->json([
+    //             'status_code' => 1, // Success
+    //             'message' => 'Category and translation updated successfully!',
+    //             'category' => $category, // Include updated category and translations
+    //         ]); // HTTP status code 200 (OK)
+
+    //     } catch (\Exception $e) {
+    //         // Handle any errors
+    //         return response()->json([
+    //             'status_code' => 2, // Failure
+    //             'message' => 'Something went wrong. Please try again.',
+    //             'error' => $e->getMessage(),
+    //         ], 500); // HTTP status code 500 (Internal Server Error)
+    //     }
+    // }
     public function fetchAllCategories(Request $request)
     {
         // Validate the incoming request to ensure the language parameter is provided and valid
