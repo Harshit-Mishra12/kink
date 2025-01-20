@@ -14,8 +14,7 @@ class Question extends Model
 
     // Define the columns that are mass assignable
     protected $fillable = [
-        'question_text',
-        'status',
+        'is_active',
     ];
 
     // Optionally, you can add timestamps if they are present in the table
@@ -24,5 +23,10 @@ class Question extends Model
     public function categories()
     {
         return $this->belongsToMany(Category::class, 'question_categories');
+    }
+
+    public function translations()
+    {
+        return $this->hasMany(QuestionTranslation::class);
     }
 }
