@@ -12,11 +12,20 @@
             color: #333;
             background-color: #f8f9fa;
         }
-        h1 {
-            text-align: center;
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .header img {
+            height: 50px;
+            margin-right: 15px;
+        }
+        .header h1 {
             color: #444;
             font-size: 24px;
-            margin-bottom: 20px;
+            margin: 0;
         }
         table {
             width: 100%;
@@ -26,7 +35,7 @@
             background-color: #fff;
         }
         thead {
-            background-color: #007bff;
+            background-color: red;
             color: #fff;
         }
         th, td {
@@ -53,7 +62,10 @@
     </style>
 </head>
 <body>
-    <h1>User Report</h1>
+    <div class="header">
+        <img src="{{ asset('images/logo.avif') }}" alt="Company Logo">
+        <h1>User Report</h1>
+    </div>
     <table>
         <thead>
             <tr>
@@ -68,7 +80,6 @@
                     <td>{{ $category['category_name'] }}</td>
                     <td class="center">{{ $category['total_score'] }}</td>
                     <td class="center">{{ number_format($category['average_percentage'], 1) }}%</td>
-
                 </tr>
             @endforeach
         </tbody>
