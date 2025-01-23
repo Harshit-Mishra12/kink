@@ -25,7 +25,6 @@ return new class extends Migration
             $table->unsignedBigInteger('question_id'); // Foreign key to questions table
             $table->string('language'); // Language code (e.g., 'en', 'fr', 'es')
             $table->text('text'); // Translated question text
-            $table->text('hint')->nullable(); // Optional translated hint or explanation
             $table->timestamps(); // Created_at and updated_at timestamps
 
             // Add foreign key constraint
