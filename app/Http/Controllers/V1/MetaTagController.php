@@ -44,9 +44,13 @@ class MetaTagController extends Controller
             ]
         );
 
-        return response()->json(['message' => 'Meta tag saved successfully!', 'data' => $metaTag]);
-    }
 
+        return response()->json([
+            'status_code' => 1, // Success
+            'message' => 'Meta tag saved successfully!',
+            'data' => $metaTag,
+        ]);
+    }
     public function fetchMetaTag(Request $request)
     {
         $validated = $request->validate([
@@ -55,34 +59,89 @@ class MetaTagController extends Controller
             'language' => 'required|string|max:5', // Example: 'en', 'de'
         ]);
 
-        // Fetch the page using type and type_id
-        $page = Page::where('type', $validated['type'])
-            ->where('type_id', $validated['type_id'])
-            ->first();
+        try {
+            // Fetch the page using type and type_id
+            $page = Page::where('type', $validated['type'])
+                ->where('type_id', $validated['type_id'])
+                ->first();
 
-        // If page not found, return error
-        if (!$page) {
-            return response()->json(['message' => 'Page not found'], 404);
+            // If page not found, return error
+            if (!$page) {
+                return response()->json([
+                    'status_code' => 2, // Failure
+                    'message' => 'Page not found',
+                ]);
+            }
+
+            // Fetch the meta tag for the specified language
+            $metaTag = $page->metaTags()->where('language', $validated['language'])->first();
+
+            // If meta tag not found, return error
+            if (!$metaTag) {
+                return response()->json([
+                    'status_code' => 2, // Failure
+                    'message' => 'Meta tag not found for the specified language',
+                ]);
+            }
+
+            // Return the meta tag
+            return response()->json([
+                'status_code' => 1, // Success
+                'message' => 'Meta tag fetched successfully',
+                'data' => [
+                    'type' => $page->type,
+                    'type_id' => $page->type_id,
+                    'language' => $metaTag->language,
+                    'title' => $metaTag->title,
+                    'description' => $metaTag->description,
+                    'meta_keywords' => $metaTag->meta_keywords,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            // Handle any unexpected errors
+            return response()->json([
+                'status_code' => 2, // Failure
+                'message' => 'Failed to fetch meta tag: ' . $e->getMessage(),
+            ], 500);
         }
-
-        // Fetch the meta tag for the specified language
-        $metaTag = $page->metaTags()->where('language', $validated['language'])->first();
-
-        // If meta tag not found, return error
-        if (!$metaTag) {
-            return response()->json(['message' => 'Meta tag not found for the specified language'], 404);
-        }
-
-        // Return the meta tag
-        return response()->json([
-            'type' => $page->type,
-            'type_id' => $page->type_id,
-            'language' => $metaTag->language,
-            'title' => $metaTag->title,
-            'description' => $metaTag->description,
-            'meta_keywords' => $metaTag->meta_keywords,
-        ]);
     }
+
+    // public function fetchMetaTag(Request $request)
+    // {
+    //     $validated = $request->validate([
+    //         'type' => 'required|string|in:page,category', // Must be 'page' or 'category'
+    //         'type_id' => 'required|string', // Example: 'about_us' for page, or '1' for category
+    //         'language' => 'required|string|max:5', // Example: 'en', 'de'
+    //     ]);
+
+    //     // Fetch the page using type and type_id
+    //     $page = Page::where('type', $validated['type'])
+    //         ->where('type_id', $validated['type_id'])
+    //         ->first();
+
+    //     // If page not found, return error
+    //     if (!$page) {
+    //         return response()->json(['message' => 'Page not found'], 404);
+    //     }
+
+    //     // Fetch the meta tag for the specified language
+    //     $metaTag = $page->metaTags()->where('language', $validated['language'])->first();
+
+    //     // If meta tag not found, return error
+    //     if (!$metaTag) {
+    //         return response()->json(['message' => 'Meta tag not found for the specified language'], 404);
+    //     }
+
+    //     // Return the meta tag
+    //     return response()->json([
+    //         'type' => $page->type,
+    //         'type_id' => $page->type_id,
+    //         'language' => $metaTag->language,
+    //         'title' => $metaTag->title,
+    //         'description' => $metaTag->description,
+    //         'meta_keywords' => $metaTag->meta_keywords,
+    //     ]);
+    // }
 
     // public function saveOrUpdateMetaTag(Request $request)
     // {
