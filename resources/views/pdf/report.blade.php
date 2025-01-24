@@ -13,19 +13,22 @@
             background-color: #f8f9fa;
         }
         .header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            display: flex; /* Flexbox for horizontal alignment */
+            align-items: center; /* Vertically center logo and title */
+            justify-content: center; /* Center the title */
             margin-bottom: 20px;
+            position: relative;
         }
         .header img {
-            height: 50px;
-            margin-right: 15px;
+            position: absolute; /* Position logo to the left */
+            left: 0; /* Touching the left-most margin */
+            height: 50px; /* Adjust logo size */
+            margin-left: 10px; /* Optional space from the edge */
         }
         .header h1 {
+            margin: 0;
             color: #444;
             font-size: 24px;
-            margin: 0;
         }
         table {
             width: 100%;
@@ -63,7 +66,9 @@
 </head>
 <body>
     <div class="header">
-        <img src="{{ asset('images/logo.avif') }}" alt="Company Logo">
+        <!-- Logo touching left margin -->
+        <img src="{{ asset('images/image.png') }}" alt="Company Logo">
+        <!-- Title centered -->
         <h1>User Report</h1>
     </div>
     <table>
