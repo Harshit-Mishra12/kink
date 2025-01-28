@@ -225,78 +225,152 @@ class CategoryController extends Controller
     //     }
     // }
     public function fetchAllCategories(Request $request)
-    {
-        // Validate the incoming request to ensure the language parameter is provided and valid
-        $request->validate([
-            'language' => 'required|string|in:en,de,fr', // Ensure the language is provided and valid
-        ]);
+{
+    // Validate the incoming request to ensure the language parameter is provided and valid
+    $request->validate([
+        'language' => 'required|string|in:en,de,fr', // Ensure the language is provided and valid
+    ]);
 
-        try {
-            // Fetch all categories with translations for the specified language and their associated questions with translations
-            $categories = Category::with([
-                'translations' => function ($query) use ($request) {
-                    // Only include translations for the requested language
-                    $query->where('language', $request->language);
-                },
-                'questions' => function ($query) use ($request) {
-                    // Include question translations for the requested language
-                    $query->with(['translations' => function ($query) use ($request) {
-                        $query->where('language', $request->language); // Filter question translations by language
-                    }]);
-                }
-            ])->get();
-
-            // Filter out categories that don't have a translation for the requested language
-            $categories = $categories->filter(function ($category) {
-                return $category->translations->isNotEmpty(); // Keep only categories that have a translation for the requested language
-            });
-
-            // If there are no categories with the requested language, return an empty array
-            if ($categories->isEmpty()) {
-                return response()->json([
-                    'status_code' => 2, // Failure
-                    'message' => 'No categories found for the requested language.',
-                ]); // HTTP status code 404 (Not Found)
+    try {
+        // Fetch all categories with translations for the specified language and their associated questions with translations
+        $categories = Category::with([
+            'translations' => function ($query) use ($request) {
+                // Only include translations for the requested language
+                $query->where('language', $request->language);
+            },
+            'questions.translations' => function ($query) use ($request) {
+                // Include question translations for the requested language
+                $query->where('language', $request->language);
             }
+        ])->get();
 
-            // Map the categories to return only relevant translation for each category
-            $categories = $categories->map(function ($category) use ($request) {
-                $translation = $category->translations->first(); // Get the translation for the requested language
+        // Filter out categories that don't have a translation for the requested language
+        $categories = $categories->filter(function ($category) {
+            return $category->translations->isNotEmpty(); // Keep only categories that have a translation for the requested language
+        });
 
-                return [
-                    'id' => $category->id,
-                    'image' => $category->image,
-                    'name' => $translation ? $translation->name : null,
-                    'title' => $translation ? $translation->title : null,
-                    'short_description' => $translation ? $translation->short_description : null,
-                    'content' => $translation ? $translation->content : null,
-                    'questions' => $category->questions->map(function ($question) use ($request) {
-                        $questionTranslation = $question->translations->first(); // Get the translation for the question in the requested language
-
-                        return [
-                            'id' => $question->id,
-                            'question' => $questionTranslation ? $questionTranslation->text : null, // Include the translated question text
-                        ];
-                    }),
-                ];
-            });
-
-            // Return success response with all categories that have translations in the requested language
-            return response()->json([
-                'status_code' => 1, // Success
-                'message' => 'Categories fetched successfully!',
-                'categories' => $categories, // Return filtered and formatted categories
-            ]); // HTTP status code 200 (OK)
-
-        } catch (\Exception $e) {
-            // Handle any errors
+        // If there are no categories with the requested language, return an empty array
+        if ($categories->isEmpty()) {
             return response()->json([
                 'status_code' => 2, // Failure
-                'message' => 'Something went wrong. Please try again.',
-                'error' => $e->getMessage(),
-            ], 500); // HTTP status code 500 (Internal Server Error)
+                'message' => 'No categories found for the requested language.',
+                'categories' => []
+            ]); // HTTP status code 404 (Not Found)
         }
+
+        // Map the categories to return only relevant translation for each category
+        $categories = $categories->map(function ($category) {
+            $translation = $category->translations->first(); // Get the translation for the requested language
+
+            return [
+                'id' => $category->id,
+                'image' => $category->image,
+                'name' => $translation ? $translation->name : null,
+                'title' => $translation ? $translation->title : null,
+                'short_description' => $translation ? $translation->short_description : null,
+                'content' => $translation ? $translation->content : null,
+                'questions' => $category->questions->map(function ($question) {
+                    $questionTranslation = $question->translations->first(); // Get the translation for the question in the requested language
+
+                    return [
+                        'id' => $question->id,
+                        'question' => $questionTranslation ? $questionTranslation->text : null, // Include the translated question text
+                    ];
+                })->values(), // Ensure the questions remain as an array
+            ];
+        })->values(); // Convert to an array to ensure proper JSON formatting
+
+        // Return success response with all categories that have translations in the requested language
+        return response()->json([
+            'status_code' => 1, // Success
+            'message' => 'Categories fetched successfully!',
+            'categories' => $categories->toArray(), // Ensure it is explicitly converted to an array
+        ]); // HTTP status code 200 (OK)
+
+    } catch (\Exception $e) {
+        // Handle any errors
+        return response()->json([
+            'status_code' => 2, // Failure
+            'message' => 'Something went wrong. Please try again.',
+            'error' => $e->getMessage(),
+        ], 500); // HTTP status code 500 (Internal Server Error)
     }
+}
+
+
+    // public function fetchAllCategories(Request $request)
+    // {
+    //     // Validate the incoming request to ensure the language parameter is provided and valid
+    //     $request->validate([
+    //         'language' => 'required|string|in:en,de,fr', // Ensure the language is provided and valid
+    //     ]);
+
+    //     try {
+    //         // Fetch all categories with translations for the specified language and their associated questions with translations
+    //         $categories = Category::with([
+    //             'translations' => function ($query) use ($request) {
+    //                 // Only include translations for the requested language
+    //                 $query->where('language', $request->language);
+    //             },
+    //             'questions' => function ($query) use ($request) {
+    //                 // Include question translations for the requested language
+    //                 $query->with(['translations' => function ($query) use ($request) {
+    //                     $query->where('language', $request->language); // Filter question translations by language
+    //                 }]);
+    //             }
+    //         ])->get();
+
+    //         // Filter out categories that don't have a translation for the requested language
+    //         $categories = $categories->filter(function ($category) {
+    //             return $category->translations->isNotEmpty(); // Keep only categories that have a translation for the requested language
+    //         });
+
+    //         // If there are no categories with the requested language, return an empty array
+    //         if ($categories->isEmpty()) {
+    //             return response()->json([
+    //                 'status_code' => 2, // Failure
+    //                 'message' => 'No categories found for the requested language.',
+    //             ]); // HTTP status code 404 (Not Found)
+    //         }
+
+    //         // Map the categories to return only relevant translation for each category
+    //         $categories = $categories->map(function ($category) use ($request) {
+    //             $translation = $category->translations->first(); // Get the translation for the requested language
+
+    //             return [
+    //                 'id' => $category->id,
+    //                 'image' => $category->image,
+    //                 'name' => $translation ? $translation->name : null,
+    //                 'title' => $translation ? $translation->title : null,
+    //                 'short_description' => $translation ? $translation->short_description : null,
+    //                 'content' => $translation ? $translation->content : null,
+    //                 'questions' => $category->questions->map(function ($question) use ($request) {
+    //                     $questionTranslation = $question->translations->first(); // Get the translation for the question in the requested language
+
+    //                     return [
+    //                         'id' => $question->id,
+    //                         'question' => $questionTranslation ? $questionTranslation->text : null, // Include the translated question text
+    //                     ];
+    //                 }),
+    //             ];
+    //         });
+
+    //         // Return success response with all categories that have translations in the requested language
+    //         return response()->json([
+    //             'status_code' => 1, // Success
+    //             'message' => 'Categories fetched successfully!',
+    //             'categories' => $categories, // Return filtered and formatted categories
+    //         ]); // HTTP status code 200 (OK)
+
+    //     } catch (\Exception $e) {
+    //         // Handle any errors
+    //         return response()->json([
+    //             'status_code' => 2, // Failure
+    //             'message' => 'Something went wrong. Please try again.',
+    //             'error' => $e->getMessage(),
+    //         ], 500); // HTTP status code 500 (Internal Server Error)
+    //     }
+    // }
 
 
     public function fetchCategoryById(Request $request)
