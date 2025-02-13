@@ -8,6 +8,7 @@ use App\Http\Controllers\V1\QuestionsController;
 use App\Http\Controllers\V1\OptionsController;
 use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\ContactUsController;
+use App\Http\Controllers\V1\HomePageController;
 use App\Http\Controllers\V1\ImprintController;
 use App\Http\Controllers\V1\MetaTagController;
 use App\Http\Controllers\V1\PrivacyPolicyController;
@@ -40,6 +41,8 @@ Route::prefix('v1')->group(function () {
     Route::post('/fetch-contactus', [ContactUsController::class, 'fetchContactUs']);
     Route::post('/save-aboutus', [AboutUsController::class, 'createOrUpdateAboutUs']);
     Route::post('/fetch-aboutus', [AboutUsController::class, 'fetchAboutUs']);
+    Route::post('/save-homepage', [HomePageController::class, 'createOrUpdateHomePage']);
+    Route::post('/fetch-homepage', [HomePageController::class, 'fetchHomePage']);
 
     Route::post('/save-privacypolicy', [PrivacyPolicyController::class, 'createOrUpdatePrivacyPolicy']);
     Route::post('/fetch-privacypolicy', [PrivacyPolicyController::class, 'fetchPrivacyPolicy']);
@@ -60,6 +63,8 @@ Route::prefix('v1')->group(function () {
             Route::post('/fetch-contactus', [ContactUsController::class, 'fetchContactUs']);
             Route::post('/save-aboutus', [AboutUsController::class, 'createOrUpdateAboutUs']);
             Route::post('/fetch-aboutus', [AboutUsController::class, 'fetchAboutUs']);
+
+
             Route::post('/save-category', [CategoryController::class, 'saveCategory']);
             Route::post('/update-category', [CategoryController::class, 'updateCategory']);
             Route::post('/delete-category', [CategoryController::class, 'deleteCategory']);
