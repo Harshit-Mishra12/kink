@@ -22,7 +22,6 @@ class AboutUsController extends Controller
 
         // Check if About Us entry already exists for the specified language
         $aboutUs = AboutUs::where('language', $validated['language'])->first();
-
         if ($aboutUs) {
             // Update existing record
             $aboutUs->update($validated);
