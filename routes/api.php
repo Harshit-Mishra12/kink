@@ -71,6 +71,8 @@ Route::prefix('v1')->group(function () {
             Route::post('/fetch-all-categories', [CategoryController::class, 'fetchAllCategories']);
             Route::post('/fetch-categorybyid', [CategoryController::class, 'fetchCategoryById']);
             Route::post('/fetch-users', [UserController::class, 'fetchUsers']);
+            Route::post('/fetch-users-analysis', [UserController::class, 'fetchUserAnalysis']);
+
             Route::post('/fetch-results', [ResultsController::class, 'fetchUserReport']);
             Route::post('/fetch-statistics', [StatisticsController::class, 'fetchStatistics']);
             Route::post('/fetch-questions-with-responses', [ResultsController::class, 'fetchQuestionsWithResponses']);
