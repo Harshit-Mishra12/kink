@@ -1,4 +1,4 @@
-name: Deploy Laravel API to Hostinger
+name: 🚀 Laravel Deploy to CyberPanel
 
 on:
   push:
@@ -6,45 +6,33 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  deploy:
+    name: Deploy Laravel App
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: 📦 Checkout Repo
+        uses: actions/checkout@v4
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
+      - name: 🔐 Setup SSH Key
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          php-version: "8.0"
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
 
-      - name: Install Composer dependencies
-        run: composer install --no-dev --optimize-autoloader
-
-      - name: Prepare storage and cache directories
+      - name: 📤 Deploy to CyberPanel via SSH
         run: |
-          mkdir -p storage/framework/{cache,sessions,views}
-          mkdir -p storage/logs
-          mkdir -p bootstrap/cache
-          chmod -R 777 storage
-          chmod -R 777 bootstrap/cache
+          ssh -o StrictHostKeyChecking=no root@173.212.213.153 << 'EOF'
+            cd /home/biotaplant.com/kink2.biotaplant.com
 
-      - name: Clear Cache and Optimize
-        run: |
-          php artisan config:clear
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
+            echo "📥 Pulling latest code..."
+            git pull origin main
 
-      - name: Clear Cache Optimize
-        run: php artisan optimize
+            echo "📦 Installing Composer dependencies..."
+            composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Deploy to Hostinger
-        uses: appleboy/scp-action@v0.1.0
-        with:
-          host: 217.21.94.205
-          username: u790439483
-          password: Rammandir@2021
-          port: 65002
-          source: .
-          target: public_html/public_html/kink
+            echo "🔧 Running Laravel setup commands..."
+            php artisan migrate --force
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+          EOF
