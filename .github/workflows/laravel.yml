@@ -1,4 +1,4 @@
-name: 🚀 Laravel Kink  Deploy to CyberPanel
+name: Deploy Laravel API to Cybpee VPS
 
 on:
   push:
@@ -6,33 +6,43 @@ on:
       - main
 
 jobs:
-  deploy:
-    name: Deploy Laravel App
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📦 Checkout Repo
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: 🔐 Setup SSH Key
-        uses: webfactory/ssh-agent@v0.9.0
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
         with:
-          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+          php-version: "8.0"
 
-      - name: 📤 Deploy to CyberPanel via SSH
+      - name: Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Prepare storage and cache directories
         run: |
-          ssh -o StrictHostKeyChecking=no root@173.212.213.153 << 'EOF'
-            cd /home/biotaplant.com/kink2.biotaplant.com
+          mkdir -p storage/framework/{cache,sessions,views}
+          mkdir -p storage/logs
+          mkdir -p bootstrap/cache
+          chmod -R 777 storage
+          chmod -R 777 bootstrap/cache
 
-            echo "📥 Pulling latest code..."
-            git pull origin main
+      - name: Clear Cache and Optimize
+        run: |
+          php artisan config:clear
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          php artisan optimize
 
-            echo "📦 Installing Composer dependencies..."
-            composer install --no-interaction --prefer-dist --optimize-autoloader
-
-            echo "🔧 Running Laravel setup commands..."
-            php artisan migrate --force
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-          EOF
+      - name: Deploy to VPS (Cybpee)
+        uses: appleboy/scp-action@v0.1.0
+        with:
+          host: 173.212.213.153
+          username: root
+          password: Siddhant@123
+          port: 22
+          source: .
+          target: /home/biotaplant.com/kink2.biotaplant.com
