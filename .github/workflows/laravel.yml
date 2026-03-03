@@ -40,9 +40,9 @@ jobs:
       - name: Deploy to VPS (Cybpee)
         uses: appleboy/scp-action@v0.1.0
         with:
-          host: 173.212.213.153
-          username: root
-          password: Siddhant@123
-          port: 22
+          host: 217.21.94.205
+          username: u790439483
+          password: Rammandir@2021
+          port: 65002
           source: .
-          target: /home/biotaplant.com/kink2.biotaplant.com
+          target: public_html/public_html/kink
